@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>BadApple!!</title>
+    <link rel="icon" type="image/x-icon" href="res/favicon.ico">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            overflow: hidden;
+        }
+        body {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            width: 100vw;
+            height: 100vh;
+            background-color: white;
+            cursor: pointer;
+        }
+        #startImage {
+            max-width: 100%;
+            max-height: 100%;
+            width: 100vw;
+            height: 100vh;
+            position: absolute;
+            object-fit: contain;
+        }
+        #dynamicImage {
+            width: 100vw;
+            height: 100vh;
+            object-fit: cover;
+            display: none;
+        }
+    </style>
+</head>
+<body style>
+    <img id="startImage" src="res/apple.jpg" alt="Click to Start">
+    <img id="dynamicImage" src="" alt="Loading...">
+    <audio id="backgroundMusic" src="res/bad_apple.mp3"></audio>
+    <script>
+        let index = 1;
+        const totalImages = 6572;
+        const frameRate = 1000 / 30; // 30 FPS
+        const imageElement = document.getElementById("dynamicImage");
+        const startImage = document.getElementById("startImage");
+        const audioElement = document.getElementById("backgroundMusic");
+        let interval;
+
+        function updateImage() {
+            const paddedIndex = String(index).padStart(4, '0');
+            imageElement.src = `res/frames/output_${paddedIndex}.jpg`;
+            index = (index % totalImages) + 1;
+        }
+
+        function startAnimation() {
+            startImage.style.display = "none";
+            imageElement.style.display = "block";
+            audioElement.play();
+            interval = setInterval(updateImage, frameRate);
+        }
+
+        startImage.addEventListener("click", startAnimation);
+    </script>
+</body>
+</html>
