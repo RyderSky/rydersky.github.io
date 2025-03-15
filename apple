@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Fast Changing Background</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            overflow: hidden;
+        }
+        body {
+            width: 100vw;
+            height: 100vh;
+            background-size: cover;
+            background-position: center;
+            background-repeat: no-repeat;
+            position: fixed;
+        }
+    </style>
+</head>
+<body>
+    <script>
+        let index = 1;
+        const totalImages = 6572;
+        const frameRate = 1000 / 30; // 30 FPS
+
+        function updateBackground() {
+            const paddedIndex = String(index).padStart(4, '0');
+            document.body.style.backgroundImage = `url('output_${paddedIndex}.jpg')`;
+            index = (index % totalImages) + 1;
+        }
+
+        setInterval(updateBackground, frameRate);
+    </script>
+</body>
+</html>
