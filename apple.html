@@ -20,6 +20,15 @@
             background-color: white;
             cursor: pointer;
         }
+        #loadingImage {
+            max-width: 100%;
+            max-height: 100%;
+            width: 100vw;
+            height: 100vh;
+            position: absolute;
+            object-fit: contain;
+            display: block;
+        }
         #startImage {
             max-width: 100%;
             max-height: 100%;
@@ -27,6 +36,7 @@
             height: 100vh;
             position: absolute;
             object-fit: contain;
+            display: none;
         }
         #dynamicImage {
             width: 100vw;
@@ -37,8 +47,9 @@
     </style>
 </head>
 <body style>
+    <img id="loadingImage" src="res/loading.jpg" alt="Loading...">
     <img id="startImage" src="res/apple.jpg" alt="Click to Start">
-    <img id="dynamicImage" src="" alt="Loading...">
+    <img id="dynamicImage" src="" alt="Playing...">
     <audio id="backgroundMusic" src="res/bad_apple.mp3"></audio>
     <script>
         let index = 1;
@@ -48,10 +59,39 @@
         const startImage = document.getElementById("startImage");
         const audioElement = document.getElementById("backgroundMusic");
         let interval;
+        let imageCache = [];
+        let imagesLoaded = 0;
+
+        function preloadImages() {
+            for (let i = 1; i <= totalImages; i++) {
+                const paddedIndex = String(i).padStart(4, '0');
+                const img = new Image();
+                img.src = `res/frames/output_${paddedIndex}.jpg`;
+                img.onload = () => {
+                    imagesLoaded++;
+                    checkImagesLoaded();
+                };
+                img.onerror = () => {
+                    console.error(`Error loading image: res/frames/output_${paddedIndex}.jpg`);
+                    imagesLoaded++;
+                    checkImagesLoaded();
+                };
+                imageCache.push(img);
+            }
+        }
+
+        function checkImagesLoaded() {
+            if (imagesLoaded === totalImages) {
+                console.log('All images loaded!');
+                loadingImage.style.display = "none";
+                startImage.style.display = "block";
+                startImage.addEventListener("click", startAnimation);
+            }
+        }
 
         function updateImage() {
             const paddedIndex = String(index).padStart(4, '0');
-            imageElement.src = `res/frames/output_${paddedIndex}.jpg`;
+            imageElement.src = imageCache[index - 1].src;
             index = (index % totalImages) + 1;
         }
 
@@ -62,7 +102,7 @@
             interval = setInterval(updateImage, frameRate);
         }
 
-        startImage.addEventListener("click", startAnimation);
+        preloadImages();
     </script>
 </body>
 </html>
