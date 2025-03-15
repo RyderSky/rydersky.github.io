@@ -50,7 +50,7 @@
     <img id="loadingImage" src="res/loading.jpg" alt="Loading...">
     <img id="startImage" src="res/apple.jpg" alt="Click to Start">
     <img id="dynamicImage" src="" alt="Playing...">
-    <audio id="backgroundMusic" src="res/bad_apple.mp3"></audio>
+    <audio id="backgroundMusic" src="res/bad_apple.mp3" preload="auto"></audio>
     <script>
         let index = 1;
         const totalImages = 6572;
@@ -69,20 +69,21 @@
                 img.src = `res/frames/output_${paddedIndex}.jpg`;
                 img.onload = () => {
                     imagesLoaded++;
-                    checkImagesLoaded();
+                    checkAssetsLoaded();
                 };
                 img.onerror = () => {
                     console.error(`Error loading image: res/frames/output_${paddedIndex}.jpg`);
                     imagesLoaded++;
-                    checkImagesLoaded();
+                    checkAssetsLoaded();
                 };
                 imageCache.push(img);
             }
         }
 
-        function checkImagesLoaded() {
-            if (imagesLoaded === totalImages) {
-                console.log('All images loaded!');
+
+        function checkAssetsLoaded() {
+            if (imagesLoaded === totalImages && audioElement.readyState > 2) {
+                console.log('All images and audio loaded!');
                 loadingImage.style.display = "none";
                 startImage.style.display = "block";
                 startImage.addEventListener("click", startAnimation);
@@ -98,7 +99,9 @@
         function startAnimation() {
             startImage.style.display = "none";
             imageElement.style.display = "block";
-            audioElement.play();
+            audioElement.play().catch(error => {
+                console.error("Error playing the audio:", error);
+            });
             interval = setInterval(updateImage, frameRate);
         }
 
